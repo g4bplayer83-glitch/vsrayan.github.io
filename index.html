@@ -83,24 +83,23 @@ body {
     background: rgb(184, 77, 255); 
 }
 
-/* === LA GRILLE DE POINTS (Beaucoup moins visible) === */
+/* === LA GRILLE DE POINTS === */
 .grid-bg {
     position: fixed;
     inset: 0;
     background-image: radial-gradient(white 1px, transparent 1px);
     background-size: 40px 40px;
-    opacity: 0.15; /* Réduit pour être très discret */
+    opacity: 0.15; 
     z-index: -3;
 }
 
-/* === EFFET DE PARTICULES FLOTTANTES (Points qui se baladent) === */
+/* === EFFET DE PARTICULES FLOTTANTES === */
 .particles-1, .particles-2, .particles-3 {
     position: fixed;
-    inset: -250px; /* Dépasse de l'écran pour que le mouvement soit fluide */
+    inset: -250px; 
     z-index: -2;
     pointer-events: none;
 }
-
 .particles-1 {
     background-image: 
         radial-gradient(2px 2px at 20% 30%, #ffffff, transparent),
@@ -113,7 +112,6 @@ body {
     animation: float1 25s linear infinite;
     opacity: 0.6;
 }
-
 .particles-2 {
     background-image: 
         radial-gradient(2px 2px at 15% 45%, #ffffff, transparent),
@@ -123,7 +121,6 @@ body {
     animation: float2 30s linear infinite;
     opacity: 0.4;
 }
-
 .particles-3 {
     background-image: 
         radial-gradient(3px 3px at 35% 15%, #ffffff, transparent),
@@ -133,8 +130,6 @@ body {
     animation: float3 35s linear infinite;
     opacity: 0.5;
 }
-
-/* Animations de flottement dans différentes directions */
 @keyframes float1 {
     0% { transform: translate(0, 0); }
     100% { transform: translate(-200px, -200px); }
@@ -148,31 +143,67 @@ body {
     100% { transform: translate(-250px, 250px); }
 }
 
-/* === L'IMAGE QUI VOLE === */
-.floating-impostor {
+/* === L'IMAGE QUI VOLE (EASTER EGG) === */
+.floating-container {
     position: fixed;
-    left: -200px;
+    left: -250px;
     top: 50vh;
-    width: 120px;
-    z-index: 5;
+    z-index: 0; 
     opacity: 0;
     pointer-events: none; 
 }
-.floating-impostor.fly {
+.floating-container.fly {
     animation: flyAcross 15s linear forwards;
-    opacity: 0.8; 
+    opacity: 1; 
 }
-@keyframes flyAcross {
-    0% { transform: translateX(0) rotate(0deg); }
-    100% { transform: translateX(120vw) rotate(720deg); }
+.floating-container img {
+    width: 120px;
+    pointer-events: auto; 
+    cursor: pointer;
+}
+.floating-container.fly img {
+    animation: spinImg 15s linear forwards;
+}
+.impostor-text {
+    position: absolute;
+    top: -40px; 
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 1.2rem;
+    text-shadow: 2px 2px 0 #ff0055, -2px -2px 0 #b84dff;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    font-weight: bold;
+}
+.impostor-text.show {
+    opacity: 1; 
 }
 
-/* === TITRE PRINCIPAL === */
-h1 {
-    font-size: clamp(2.5rem, 6vw, 4rem);
-    margin: 60px 0 40px 0;
-    letter-spacing: 4px;
-    text-shadow: 2px 2px 0 #ff0055, -2px -2px 0 #00ffff; 
+@keyframes flyAcross {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 400px)); } 
+}
+@keyframes spinImg {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(720deg); }
+}
+
+/* === LOGO PRINCIPAL === */
+.main-logo {
+    display: block;
+    margin: 60px auto 40px auto;
+    max-width: 90%;
+    width: 550px; 
+    filter: drop-shadow(0 0 15px rgba(184, 77, 255, 0.4));
+    animation: floatLogo 3s ease-in-out infinite;
+}
+@keyframes floatLogo {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
 }
 
 /* === MENU DES BOUTONS === */
@@ -228,7 +259,7 @@ h1 {
 /* === BOÎTE DE CONTENU VIOLETTE === */
 .box {
     width: min(800px, 90%);
-    margin: 0 auto 60px auto;
+    margin: 0 auto 40px auto;
     padding: 40px;
     background: black;
     border: 3px solid rgb(184, 77, 255);
@@ -237,6 +268,169 @@ h1 {
     line-height: 1.8;
     position: relative;
     z-index: 10;
+}
+
+/* === PREVIEW YOUTUBE SANS ERREUR === */
+.video-container {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 3px solid rgb(184, 77, 255);
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(184, 77, 255, 0.4);
+}
+.youtube-preview {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-image: url('https://img.youtube.com/vi/B57ZIcueQJ0/maxresdefault.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 9px;
+    text-decoration: none;
+    overflow: hidden;
+}
+.youtube-preview::after {
+    content: "▶";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: white;
+    background: rgba(255, 0, 0, 0.8);
+    width: 80px;
+    height: 55px;
+    line-height: 55px;
+    text-align: center;
+    border-radius: 15px;
+    transition: all 0.2s ease;
+}
+.youtube-preview:hover::after {
+    background: rgba(255, 0, 0, 1);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* === SECTION SCREENSHOTS (Grille) === */
+.ss-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+.ss-item {
+    width: 100%;
+    height: 180px; 
+    object-fit: cover; 
+    border-radius: 8px;
+    border: 2px solid #555;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.ss-item:hover {
+    transform: scale(1.03);
+    border-color: #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+}
+
+/* === MODAL ZOOM & BIENVENUE === */
+.modal { 
+    display: none; 
+    position: fixed; 
+    z-index: 9999999; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.85); 
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+}
+.modal-content { 
+    max-width: 90%; 
+    max-height: 90%; 
+    border: 3px solid rgb(184, 77, 255);
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(184, 77, 255, 0.6);
+    animation: zoomIn 0.3s ease;
+}
+#imageModal { cursor: zoom-out; }
+
+/* Boîte spécifique au message de bienvenue */
+.welcome-box {
+    background: #050510;
+    padding: 40px;
+    text-align: center;
+    max-width: 600px;
+    color: white;
+}
+
+@keyframes zoomIn {
+    from {transform: scale(0.8); opacity: 0;}
+    to {transform: scale(1); opacity: 1;}
+}
+
+/* === EXTRA CREDITS DU SITE === */
+.extra-credits {
+    width: min(800px, 90%);
+    margin: 0 auto 15px auto;
+    color: #ffb4b4;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.8);
+    position: relative;
+    z-index: 10;
+}
+.extra-credits span {
+    color: #b84dff;
+}
+
+/* === CHANGELOG === */
+.changelog {
+    width: min(800px, 90%);
+    margin: 0 auto 40px auto;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px dashed rgb(184, 77, 255);
+    border-radius: 10px;
+    color: #ccc;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 10;
+    text-align: left;
+}
+.changelog h3 {
+    color: #b84dff;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    text-align: center;
+}
+.changelog ul {
+    list-style-type: none;
+    padding: 0;
+}
+.changelog li {
+    margin-bottom: 8px;
+    padding-left: 15px;
+    position: relative;
+}
+.changelog li::before {
+    content: "►";
+    color: #00ffff;
+    position: absolute;
+    left: 0;
+    font-size: 0.8rem;
+    top: 2px;
+}
+.changelog strong {
+    color: #b84dff;
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
 }
 
 /* Gestion des différentes pages */
@@ -288,7 +482,7 @@ h1 {
     display: block;
 }
 
-/* Les textes des statuts des crédits (NETTETÉ AMÉLIORÉE) */
+/* Les textes des statuts des crédits */
 .credit-status {
     margin-top: 8px !important;
     font-size: 0.85rem !important;
@@ -320,16 +514,20 @@ h1 {
     </div>
 </div>
 
-<!-- LES FONDS (Grille discrète + particules flottantes) -->
+<!-- LES FONDS -->
 <div class="grid-bg"></div>
 <div class="particles-1"></div>
 <div class="particles-2"></div>
 <div class="particles-3"></div>
 
-<!-- L'IMAGE QUI VOLE -->
-<img src="floating-impostor.png" id="impostor-img" class="floating-impostor" alt="" onerror="this.style.display='none'">
+<!-- L'IMAGE QUI VOLE AVEC LE TEXTE -->
+<div id="impostor-container" class="floating-container">
+    <span id="impostor-text" class="impostor-text" data-i18n="impostor_space">im in the space lmao</span>
+    <img src="floating-impostor.png" onclick="showImpostorText()" alt="" onerror="this.parentElement.style.display='none'">
+</div>
 
-<h1>VS RAYAN REALTERED Website</h1>
+<!-- === LE LOGO IMAGE === -->
+<img src="icon.png" alt="VS Rayan Realtered Logo" class="main-logo" onerror="this.src='icon.jpg'">
 
 <!-- LE MENU VERTICAL -->
 <div class="menu">
@@ -356,6 +554,11 @@ h1 {
         <p data-i18n="home_p2">This website contains information, downloads and updates about the project.</p>
         <br>
         <p data-i18n="home_p3">VS Rayan Realtered is a fan-made Friday Night Funkin' / VS Impostor mod featuring new songs, characters and story content.</p>
+        
+        <!-- === LA PREVIEW YOUTUBE === -->
+        <div class="video-container">
+            <a href="https://www.youtube.com/watch?v=B57ZIcueQJ0" target="_blank" class="youtube-preview" title="Watch Trailer on YouTube"></a>
+        </div>
     </div>
 
     <!-- PAGE 2 : DOWNLOADS -->
@@ -371,8 +574,12 @@ h1 {
     <div id="screenshots" class="section-content">
         <h2 data-i18n="ss_title">SCREENSHOTS</h2>
         <br>
-        <p class="status" style="color: #ff5555;" data-i18n="subtitle">COMING SOON</p>
-        <p data-i18n="ss_text">No images have leaked from the servers yet...</p>
+        <div class="ss-grid">
+            <img src="ss1.png" class="ss-item" onclick="openModal(this.src)" alt="Screenshot 1">
+            <img src="ss2.png" class="ss-item" onclick="openModal(this.src)" alt="Screenshot 2">
+            <img src="ss3.png" class="ss-item" onclick="openModal(this.src)" alt="Screenshot 3">
+            <img src="ss4.png" class="ss-item" onclick="openModal(this.src)" alt="Screenshot 4">
+        </div>
     </div>
 
     <!-- PAGE 4 : CREDITS -->
@@ -455,10 +662,84 @@ h1 {
             </div>
         </div>
     </div>
+</div>
 
+<!-- === CRÉDITS DU SITE === -->
+<div class="extra-credits">
+    <span data-i18n="site_creator">Website creator :</span> IndieGabVR<br>
+    <span data-i18n="site_logo">Logo :</span> Reesay
+</div>
+
+<!-- === LE CHANGELOG === -->
+<div class="changelog">
+    <h3 data-i18n="cl_title">CHANGELOG</h3>
+    <strong>[31/05/2026]</strong>
+    <ul>
+        <li data-i18n="cl_entry1">Site finished</li>
+        <li data-i18n="cl_entry2">Added screenshots, YouTube trailer, and new logo.</li>
+    </ul>
+</div>
+
+<!-- === MODAL POUR LE ZOOM D'IMAGE === -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+    <img class="modal-content" id="modalImg">
+</div>
+
+<!-- === MODAL DE BIENVENUE === -->
+<div id="welcomeModal" class="modal">
+    <div class="modal-content welcome-box">
+        <h2 data-i18n="welcome_title" style="color: #b84dff; margin-bottom: 20px; text-shadow: 2px 2px 0 #ff0055; font-size: 2.5rem;">WELCOME</h2>
+        <p data-i18n="welcome_text" style="font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px;">Hello, welcome to the website. The last update was made on 05/31/26. To stay updated, join the Discord server.</p>
+        <button class="btn" onclick="closeWelcomeModal()" data-i18n="welcome_btn" style="margin: 0 auto;">CLOSE</button>
+    </div>
 </div>
 
 <script>
+    // =========================================================
+    // CHARGEMENT AUTOMATIQUE (LANGUE + BIENVENUE)
+    // =========================================================
+    window.onload = function() {
+        // Applique l'anglais immédiatement sans avoir besoin de cliquer
+        changeLanguage('en', '🇬🇧', 'ENGLISH');
+
+        // Vérifie si c'est la toute première visite
+        if (!localStorage.getItem('hasVisitedVSRayan')) {
+            document.getElementById('welcomeModal').style.display = 'flex';
+            localStorage.setItem('hasVisitedVSRayan', 'true');
+        }
+    };
+
+    function closeWelcomeModal() {
+        document.getElementById('welcomeModal').style.display = 'none';
+    }
+
+    // =========================================================
+    // SYSTEME DE ZOOM (MODAL IMAGES)
+    // =========================================================
+    function openModal(src) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        modalImg.src = src;
+        modal.style.display = 'flex'; 
+    }
+
+    function closeModal() {
+        document.getElementById('imageModal').style.display = 'none'; 
+    }
+
+    // =========================================================
+    // AFFICHER LE TEXTE DE L'IMPOSTEUR
+    // =========================================================
+    function showImpostorText() {
+        const txt = document.getElementById('impostor-text');
+        if(txt) {
+            txt.classList.add('show');
+            setTimeout(() => {
+                txt.classList.remove('show');
+            }, 3000);
+        }
+    }
+
     // =========================================================
     // MENU DEROULANT DES LANGUES
     // =========================================================
@@ -476,7 +757,7 @@ h1 {
     }
 
     // =========================================================
-    // DICTIONNAIRE DES TRADUCTIONS (CREDITS INCLUS)
+    // DICTIONNAIRE DES TRADUCTIONS 
     // =========================================================
     const translations = {
         en: {
@@ -496,7 +777,16 @@ h1 {
             role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
             role_aston: "Composer", role_nightyka: "Composer", role_roberts: "Charter", role_shane: "Composer",
             role_audrey: "Composer",
-            stat_v1: "( work on v1 )", stat_left: "( leave the mod )"
+            stat_v1: "( work on v1 )", stat_left: "( leave the mod )",
+            cl_title: "CHANGELOG", 
+            cl_entry1: "Site finished",
+            cl_entry2: "Added screenshots, YouTube trailer, and new logo.",
+            impostor_space: "im in the space lmao",
+            site_creator: "Website creator :",
+            site_logo: "Logo :",
+            welcome_title: "WELCOME",
+            welcome_text: "Hello, welcome to the website. The last update was made on 05/31/26. To stay updated, join the Discord server.",
+            welcome_btn: "CLOSE"
         },
         fr: {
             nav_dl: "Téléchargements", nav_ss: "Captures d'écran", nav_credits: "Crédits", nav_home: "Accueil",
@@ -515,7 +805,16 @@ h1 {
             role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
             role_aston: "Compositeur", role_nightyka: "Compositeur", role_roberts: "Charter", role_shane: "Compositeur",
             role_audrey: "Compositeur",
-            stat_v1: "( travaille sur la v1 )", stat_left: "( a quitté le mod )"
+            stat_v1: "( travaille sur la v1 )", stat_left: "( a quitté le mod )",
+            cl_title: "JOURNAL DES MODIFICATIONS", 
+            cl_entry1: "Site terminé",
+            cl_entry2: "Ajout des captures d'écran, de la vidéo YouTube et du nouveau logo.",
+            impostor_space: "je suis dans l'espace mdr",
+            site_creator: "Créateur du site :",
+            site_logo: "Logo :",
+            welcome_title: "BIENVENUE",
+            welcome_text: "Bonjour, bienvenue sur le site, la dernière mise à jour apportée a été faite le 31/05/26, pour rester au courant des mises à jour, rejoignez le serveur discord.",
+            welcome_btn: "FERMER"
         },
         it: {
             nav_dl: "Download", nav_ss: "Screenshot", nav_credits: "Crediti", nav_home: "Home",
@@ -534,7 +833,16 @@ h1 {
             role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
             role_aston: "Compositore", role_nightyka: "Compositore", role_roberts: "Charter", role_shane: "Compositore",
             role_audrey: "Compositore",
-            stat_v1: "( lavora alla v1 )", stat_left: "( ha lasciato la mod )"
+            stat_v1: "( lavora alla v1 )", stat_left: "( ha lasciato la mod )",
+            cl_title: "REGISTRO DELLE MODIFICHE", 
+            cl_entry1: "Sito completato",
+            cl_entry2: "Aggiunti screenshot, trailer di YouTube e nuovo logo.",
+            impostor_space: "sono nello spazio lol",
+            site_creator: "Creatore del sito :",
+            site_logo: "Logo :",
+            welcome_title: "BENVENUTO",
+            welcome_text: "Ciao, benvenuto sul sito. L'ultimo aggiornamento è stato effettuato il 31/05/26. Per rimanere aggiornato, unisciti al server Discord.",
+            welcome_btn: "CHIUDI"
         },
         es: {
             nav_dl: "Descargas", nav_ss: "Capturas", nav_credits: "Créditos", nav_home: "Inicio",
@@ -553,7 +861,16 @@ h1 {
             role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
             role_aston: "Compositor", role_nightyka: "Compositor", role_roberts: "Charter", role_shane: "Compositor",
             role_audrey: "Compositor",
-            stat_v1: "( trabaja en la v1 )", stat_left: "( dejó el mod )"
+            stat_v1: "( trabaja en la v1 )", stat_left: "( dejó el mod )",
+            cl_title: "REGISTRO DE CAMBIOS", 
+            cl_entry1: "Sitio terminado",
+            cl_entry2: "Se agregaron capturas de pantalla, el tráiler de YouTube y el nuevo logo.",
+            impostor_space: "estoy en el espacio jaja",
+            site_creator: "Creador del sitio :",
+            site_logo: "Logo :",
+            welcome_title: "BIENVENIDO",
+            welcome_text: "Hola, bienvenido al sitio. La última actualización se realizó el 31/05/26. Para mantenerte informado, únete al servidor de Discord.",
+            welcome_btn: "CERRAR"
         },
         nl: {
             nav_dl: "Downloads", nav_ss: "Screenshots", nav_credits: "Credits", nav_home: "Home",
@@ -572,7 +889,16 @@ h1 {
             role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
             role_aston: "Componist", role_nightyka: "Componist", role_roberts: "Charter", role_shane: "Componist",
             role_audrey: "Componist",
-            stat_v1: "( werkt aan v1 )", stat_left: "( heeft de mod verlaten )"
+            stat_v1: "( werkt aan v1 )", stat_left: "( heeft de mod verlaten )",
+            cl_title: "WIJZIGINGSLOGBOEK", 
+            cl_entry1: "Site voltooid",
+            cl_entry2: "Screenshots, YouTube-trailer en nieuw logo toegevoegd.",
+            impostor_space: "ik ben in de ruimte lol",
+            site_creator: "Maker van de website :",
+            site_logo: "Logo :",
+            welcome_title: "WELKOM",
+            welcome_text: "Hallo, welkom op de site. De laatste update is uitgevoerd op 31/05/26. Word lid van de Discord-server om op de hoogte te blijven.",
+            welcome_btn: "SLUITEN"
         },
         ko: {
             nav_dl: "다운로드", nav_ss: "스크린샷", nav_credits: "크레딧", nav_home: "홈",
@@ -591,7 +917,16 @@ h1 {
             role_yellow: "아티스트", role_luigi: "차터", role_lucas: "아티스트", role_hevtel: "차터",
             role_aston: "작곡가", role_nightyka: "작곡가", role_roberts: "차터", role_shane: "작곡가",
             role_audrey: "작곡가",
-            stat_v1: "( v1 작업 중 )", stat_left: "( 모드 떠남 )"
+            stat_v1: "( v1 작업 중 )", stat_left: "( 모드 떠남 )",
+            cl_title: "변경 로그", 
+            cl_entry1: "사이트 완료",
+            cl_entry2: "스크린샷, YouTube 예고편 및 새 로고 추가됨.",
+            impostor_space: "나 우주에 있어 ㅋㅋㅋ",
+            site_creator: "웹사이트 제작자 :",
+            site_logo: "로고 :",
+            welcome_title: "환영합니다",
+            welcome_text: "안녕하세요, 웹사이트에 오신 것을 환영합니다. 마지막 업데이트는 26년 5월 31일에 이루어졌습니다. 최신 소식을 받으려면 Discord 서버에 가입하세요.",
+            welcome_btn: "닫기"
         }
     };
 
@@ -651,14 +986,16 @@ h1 {
     // --- L'IMAGE QUI VOLE ---
     function trySpawnImpostor() {
         if (Math.random() < 0.3) {
-            const img = document.getElementById('impostor-img');
-            if (img && !img.classList.contains('fly')) {
-                img.style.top = Math.floor(Math.random() * 70) + 10 + 'vh'; 
-                img.classList.add('fly');
+            const container = document.getElementById('impostor-container');
+            if (container && !container.classList.contains('fly')) {
+                container.style.top = Math.floor(Math.random() * 70) + 10 + 'vh'; 
+                document.getElementById('impostor-text').classList.remove('show');
+                
+                container.classList.add('fly');
 
                 setTimeout(() => {
-                    img.classList.remove('fly');
-                }, 15000);
+                    container.classList.remove('fly');
+                }, 16000);
             }
         }
     }
