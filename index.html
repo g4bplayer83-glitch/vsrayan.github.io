@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VS Rayan Realtered Website</title>
+<link rel="icon" type="image/png" href="icon.png">
+<style>
+/* === IMPORT DE LA POLICE VCR === */
+@font-face {
+    font-family: 'VCR OSD Mono';
+    src: url('vcr.ttf') format('truetype'),
+         url('https://cdn.rawgit.com/marnen/vcr-osd-mono/master/VCR_OSD_MONO_1.001.ttf') format('truetype');
+}
+
+/* === RESET & FOND DE BASE === */
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    background: #050510;
+    color: white;
+    font-family: 'VCR OSD Mono', 'Courier New', Courier, monospace; 
+    text-align: center;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* === MENU DES LANGUES (DROPDOWN) === */
+.lang-dropdown {
+    position: fixed; 
+    top: 20px;
+    right: 30px;
+    z-index: 999999; 
+}
+.lang-btn {
+    background: #000000;
+    color: white;
+    border: 3px solid rgb(184, 77, 255);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-family: 'VCR OSD Mono', monospace; 
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(184, 77, 255, 0.8);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+.lang-btn:hover {
+    background: rgb(40, 10, 60);
+    transform: scale(1.05);
+}
+.lang-content {
+    display: none; 
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid rgb(184, 77, 255);
+    border-radius: 8px;
+    min-width: 180px;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.9);
+}
+.lang-content.show {
+    display: flex; 
+}
+.lang-option {
+    padding: 15px;
+    color: white;
+    text-align: left;
+    font-size: 1.1rem;
+    font-family: 'VCR OSD Mono', monospace; 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.2s;
+}
+.lang-option:hover {
+    background: rgb(184, 77, 255); 
+}
+
+/* === LA GRILLE DE POINTS (Beaucoup moins visible) === */
+.grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(white 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.15; /* Réduit pour être très discret */
+    z-index: -3;
+}
+
+/* === EFFET DE PARTICULES FLOTTANTES (Points qui se baladent) === */
+.particles-1, .particles-2, .particles-3 {
+    position: fixed;
+    inset: -250px; /* Dépasse de l'écran pour que le mouvement soit fluide */
+    z-index: -2;
+    pointer-events: none;
+}
+
+.particles-1 {
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, #ffffff, transparent),
+        radial-gradient(2px 2px at 40% 70%, #ffffff, transparent),
+        radial-gradient(3px 3px at 50% 16%, #ffffff, transparent),
+        radial-gradient(2px 2px at 90% 40%, #ffffff, transparent),
+        radial-gradient(2px 2px at 13% 80%, #ffffff, transparent),
+        radial-gradient(3px 3px at 70% 12%, #ffffff, transparent);
+    background-size: 200px 200px;
+    animation: float1 25s linear infinite;
+    opacity: 0.6;
+}
+
+.particles-2 {
+    background-image: 
+        radial-gradient(2px 2px at 15% 45%, #ffffff, transparent),
+        radial-gradient(2px 2px at 60% 80%, #ffffff, transparent),
+        radial-gradient(2px 2px at 85% 20%, #ffffff, transparent);
+    background-size: 150px 150px;
+    animation: float2 30s linear infinite;
+    opacity: 0.4;
+}
+
+.particles-3 {
+    background-image: 
+        radial-gradient(3px 3px at 35% 15%, #ffffff, transparent),
+        radial-gradient(2px 2px at 75% 65%, #ffffff, transparent),
+        radial-gradient(2px 2px at 10% 90%, #ffffff, transparent);
+    background-size: 250px 250px;
+    animation: float3 35s linear infinite;
+    opacity: 0.5;
+}
+
+/* Animations de flottement dans différentes directions */
+@keyframes float1 {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-200px, -200px); }
+}
+@keyframes float2 {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(150px, -150px); }
+}
+@keyframes float3 {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-250px, 250px); }
+}
+
+/* === L'IMAGE QUI VOLE === */
+.floating-impostor {
+    position: fixed;
+    left: -200px;
+    top: 50vh;
+    width: 120px;
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none; 
+}
+.floating-impostor.fly {
+    animation: flyAcross 15s linear forwards;
+    opacity: 0.8; 
+}
+@keyframes flyAcross {
+    0% { transform: translateX(0) rotate(0deg); }
+    100% { transform: translateX(120vw) rotate(720deg); }
+}
+
+/* === TITRE PRINCIPAL === */
+h1 {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    margin: 60px 0 40px 0;
+    letter-spacing: 4px;
+    text-shadow: 2px 2px 0 #ff0055, -2px -2px 0 #00ffff; 
+}
+
+/* === MENU DES BOUTONS === */
+.menu {
+    width: min(700px, 90%);
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+    z-index: 10;
+}
+.btn {
+    display: block;
+    padding: 15px;
+    background: black;
+    color: rgb(255, 180, 180);
+    text-decoration: none;
+    border: 3px solid rgb(150, 0, 0);
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+    font-weight: bold;
+    font-size: 1.3rem; 
+    font-family: 'VCR OSD Mono', monospace; 
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn:hover {
+    background: rgb(20, 0, 0);
+    transform: scale(1.02);
+    box-shadow: 0 0 25px rgba(255, 50, 50, 0.6);
+    color: white;
+}
+
+/* === LOGO / STATUS VIOLET === */
+.logo {
+    margin: 60px 0 20px 0;
+    position: relative;
+    z-index: 10;
+}
+.logo h2 {
+    font-size: 2.8rem;
+    color: #b84dff;
+    text-shadow: 2px 2px 0 #ff0055, -2px -2px 0 #00ffff; 
+    letter-spacing: 2px;
+}
+.status {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* === BOÎTE DE CONTENU VIOLETTE === */
+.box {
+    width: min(800px, 90%);
+    margin: 0 auto 60px auto;
+    padding: 40px;
+    background: black;
+    border: 3px solid rgb(184, 77, 255);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(184, 77, 255, 0.4);
+    line-height: 1.8;
+    position: relative;
+    z-index: 10;
+}
+
+/* Gestion des différentes pages */
+.section-content {
+    display: none; 
+    animation: fadeIn 0.3s ease-in-out;
+}
+.section-content.active {
+    display: block; 
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Compte à rebours */
+.countdown {
+    font-size: 2.5rem;
+    font-family: 'VCR OSD Mono', monospace;
+    color: #b84dff;
+    font-weight: bold;
+    margin: 20px 0;
+    text-shadow: 0 0 10px rgba(184, 77, 255, 0.5);
+}
+
+/* === CRÉDITS & STATUTS === */
+.credits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    text-align: left;
+    margin-top: 20px;
+}
+.credit-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #b84dff;
+}
+.credit-item strong {
+    color: #b31818;
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 5px;
+}
+.credit-item span {
+    font-size: 0.9rem;
+    color: #ffb4b4;
+    display: block;
+}
+
+/* Les textes des statuts des crédits (NETTETÉ AMÉLIORÉE) */
+.credit-status {
+    margin-top: 8px !important;
+    font-size: 0.85rem !important;
+    text-decoration: underline;
+    color: #c0941b !important; 
+    text-shadow: 0 0 3px rgba(70, 148, 148, 0.5);
+    font-weight: bold;
+}
+.credit-status.leave {
+    color: #ff5555 !important; 
+    text-shadow: 0 0 3px rgba(255, 85, 85, 0.5);
+}
+</style>
+</head>
+<body>
+
+<!-- LE SÉLECTEUR DE LANGUE (DROPDOWN) -->
+<div class="lang-dropdown">
+    <button class="lang-btn" onclick="toggleLangMenu()">
+        <span id="current-flag">🇬🇧</span> <span id="current-lang-name">ENGLISH</span> ▼
+    </button>
+    <div class="lang-content" id="lang-content">
+        <div class="lang-option" onclick="changeLanguage('en', '🇬🇧', 'ENGLISH')">🇬🇧 ENGLISH</div>
+        <div class="lang-option" onclick="changeLanguage('fr', '🇫🇷', 'FRENCH')">🇫🇷 FRENCH</div>
+        <div class="lang-option" onclick="changeLanguage('it', '🇮🇹', 'ITALIAN')">🇮🇹 ITALIAN</div>
+        <div class="lang-option" onclick="changeLanguage('es', '🇪🇸', 'SPANISH')">🇪🇸 SPANISH</div>
+        <div class="lang-option" onclick="changeLanguage('nl', '🇳🇱', 'DUTCH')">🇳🇱 DUTCH</div>
+        <div class="lang-option" onclick="changeLanguage('ko', '🇰🇷', 'KOREAN')">🇰🇷 KOREAN</div>
+    </div>
+</div>
+
+<!-- LES FONDS (Grille discrète + particules flottantes) -->
+<div class="grid-bg"></div>
+<div class="particles-1"></div>
+<div class="particles-2"></div>
+<div class="particles-3"></div>
+
+<!-- L'IMAGE QUI VOLE -->
+<img src="floating-impostor.png" id="impostor-img" class="floating-impostor" alt="" onerror="this.style.display='none'">
+
+<h1>VS RAYAN REALTERED Website</h1>
+
+<!-- LE MENU VERTICAL -->
+<div class="menu">
+    <a class="btn" href="https://discord.gg/WpUkEAbsq5" target="_blank">Discord</a>
+    <a class="btn" onclick="showSection('downloads')" data-i18n="nav_dl">Downloads</a>
+    <a class="btn" onclick="showSection('screenshots')" data-i18n="nav_ss">Screenshots</a>
+    <a class="btn" onclick="showSection('credits')" data-i18n="nav_credits">Credits</a>
+    <a class="btn" onclick="showSection('home')" style="border-color: #555; color: #aaa; box-shadow: none;" data-i18n="nav_home">Home</a>
+</div>
+
+<!-- LE SOUS-TITRE VIOLET -->
+<div class="logo">
+    <h2>VS RAYAN REALTERED</h2>
+    <p class="status" data-i18n="subtitle">COMING SOON</p>
+</div>
+
+<!-- LA GRANDE BOÎTE DYNAMIQUE -->
+<div class="box">
+    
+    <!-- PAGE 1 : ACCUEIL -->
+    <div id="home" class="section-content active">
+        <p data-i18n="home_p1">Welcome to the official VS Rayan Realtered website.</p>
+        <br>
+        <p data-i18n="home_p2">This website contains information, downloads and updates about the project.</p>
+        <br>
+        <p data-i18n="home_p3">VS Rayan Realtered is a fan-made Friday Night Funkin' / VS Impostor mod featuring new songs, characters and story content.</p>
+    </div>
+
+    <!-- PAGE 2 : DOWNLOADS -->
+    <div id="downloads" class="section-content">
+        <h2 data-i18n="dl_title">DOWNLOADS</h2>
+        <br>
+        <p class="status" style="color: #ff5555;" data-i18n="subtitle">COMING SOON</p>
+        <p data-i18n="dl_text">Drop is scheduled in:</p>
+        <div id="timer" class="countdown">Loading...</div>
+    </div>
+
+    <!-- PAGE 3 : SCREENSHOTS -->
+    <div id="screenshots" class="section-content">
+        <h2 data-i18n="ss_title">SCREENSHOTS</h2>
+        <br>
+        <p class="status" style="color: #ff5555;" data-i18n="subtitle">COMING SOON</p>
+        <p data-i18n="ss_text">No images have leaked from the servers yet...</p>
+    </div>
+
+    <!-- PAGE 4 : CREDITS -->
+    <div id="credits" class="section-content">
+        <h2 data-i18n="cred_title">The Project Team</h2>
+        <br>
+        <p data-i18n="cred_text">A big thanks to everyone who made this mod possible!</p>
+        
+        <div class="credits-grid">
+            <div class="credit-item">
+                <strong>AlgerRayan</strong> 
+                <span data-i18n="role_alger">Director, composer, charter, concept artists, voice acting</span>
+                <span class="credit-status" data-i18n="stat_v1">( work on v1 )</span>
+            </div>
+            <div class="credit-item">
+                <strong>IndieGabVR</strong> 
+                <span data-i18n="role_indie">Co director, coder, artists, composer, charter</span>
+                <span class="credit-status" data-i18n="stat_v1">( work on v1 )</span>
+            </div>
+            <div class="credit-item">
+                <strong>Simontincs_god</strong> 
+                <span data-i18n="role_simon">Composer</span>
+                <span class="credit-status" data-i18n="stat_v1">( work on v1 )</span>
+            </div>
+            <div class="credit-item">
+                <strong>Reesay</strong> 
+                <span data-i18n="role_reesay">Artists</span>
+                <span class="credit-status" data-i18n="stat_v1">( work on v1 )</span>
+            </div>
+            <div class="credit-item">
+                <strong>PENNY</strong> 
+                <span data-i18n="role_penny">Artists</span>
+                <span class="credit-status leave" data-i18n="stat_left">( leave the mod )</span>
+            </div>
+            <div class="credit-item">
+                <strong>Dardex</strong> 
+                <span data-i18n="role_dardex">Artists</span>
+                <span class="credit-status leave" data-i18n="stat_left">( leave the mod )</span>
+            </div>
+            <div class="credit-item">
+                <strong>Yellowcrewmate</strong> 
+                <span data-i18n="role_yellow">Artists</span>
+                <span class="credit-status" data-i18n="stat_v1">( work on v1 )</span>
+            </div>
+            <div class="credit-item">
+                <strong>Thatoneluigi</strong> 
+                <span data-i18n="role_luigi">Charter</span>
+                <span class="credit-status" data-i18n="stat_v1">( work on v1 )</span>
+            </div>
+            <div class="credit-item">
+                <strong>Lucas_ber</strong> 
+                <span data-i18n="role_lucas">Artists</span>
+                <span class="credit-status" data-i18n="stat_v1">( work on v1 )</span>
+            </div>
+            <div class="credit-item">
+                <strong>Hevtel</strong> 
+                <span data-i18n="role_hevtel">Charter</span>
+            </div>
+            <div class="credit-item">
+                <strong>Aston</strong> 
+                <span data-i18n="role_aston">Composer</span>
+            </div>
+            <div class="credit-item">
+                <strong>Nightyka</strong> 
+                <span data-i18n="role_nightyka">Composer</span>
+                <span class="credit-status" data-i18n="stat_v1">( work on v1 )</span>
+            </div>
+            <div class="credit-item">
+                <strong>Roberts Santos</strong> 
+                <span data-i18n="role_roberts">Charter</span>
+                <span class="credit-status" data-i18n="stat_v1">( work on v1 )</span>
+            </div>
+            <div class="credit-item">
+                <strong>Shane</strong> 
+                <span data-i18n="role_shane">Composer</span>
+            </div>
+            <div class="credit-item">
+                <strong>Audreytheproducter</strong> 
+                <span data-i18n="role_audrey">Composer</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // =========================================================
+    // MENU DEROULANT DES LANGUES
+    // =========================================================
+    function toggleLangMenu() {
+        document.getElementById("lang-content").classList.toggle("show");
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.closest('.lang-dropdown')) {
+            const dropdown = document.getElementById("lang-content");
+            if (dropdown && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        }
+    }
+
+    // =========================================================
+    // DICTIONNAIRE DES TRADUCTIONS (CREDITS INCLUS)
+    // =========================================================
+    const translations = {
+        en: {
+            nav_dl: "Downloads", nav_ss: "Screenshots", nav_credits: "Credits", nav_home: "Home",
+            subtitle: "COMING SOON",
+            home_p1: "Welcome to the official VS Rayan Realtered website.",
+            home_p2: "This website contains information, downloads and updates about the project.",
+            home_p3: "VS Rayan Realtered is a fan-made Friday Night Funkin' / VS Impostor mod featuring new songs, characters and story content.",
+            dl_title: "DOWNLOADS", dl_text: "Drop is scheduled in:",
+            ss_title: "SCREENSHOTS", ss_text: "No images have leaked from the servers yet...",
+            cred_title: "The Project Team", cred_text: "A big thanks to everyone who made this mod possible!",
+            mod_out: "THE MOD IS OUT!",
+            time_units: "d h m s",
+            role_alger: "Director, composer, charter, concept artists, voice acting",
+            role_indie: "Co director, coder, artists, composer, charter",
+            role_simon: "Composer", role_reesay: "Artists", role_penny: "Artists", role_dardex: "Artists",
+            role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
+            role_aston: "Composer", role_nightyka: "Composer", role_roberts: "Charter", role_shane: "Composer",
+            role_audrey: "Composer",
+            stat_v1: "( work on v1 )", stat_left: "( leave the mod )"
+        },
+        fr: {
+            nav_dl: "Téléchargements", nav_ss: "Captures d'écran", nav_credits: "Crédits", nav_home: "Accueil",
+            subtitle: "BIENTÔT DISPONIBLE",
+            home_p1: "Bienvenue sur le site officiel de VS Rayan Realtered.",
+            home_p2: "Ce site contient des informations, des téléchargements et des mises à jour sur le projet.",
+            home_p3: "VS Rayan Realtered est un mod fan-made de Friday Night Funkin' / VS Impostor proposant de nouvelles musiques, de nouveaux personnages et un mode histoire.",
+            dl_title: "TÉLÉCHARGEMENTS", dl_text: "Le largage est prévu dans :",
+            ss_title: "CAPTURES D'ÉCRAN", ss_text: "Aucune image n'a encore fuité des serveurs...",
+            cred_title: "L'Équipe du Projet", cred_text: "Un grand merci à toutes les personnes qui ont rendu ce mod possible !",
+            mod_out: "LE MOD EST SORTI !",
+            time_units: "j h m s",
+            role_alger: "Directeur, compositeur, charter, concept artists, doublage vocal",
+            role_indie: "Co-directeur, codeur, artists, compositeur, charter",
+            role_simon: "Compositeur", role_reesay: "Artists", role_penny: "Artists", role_dardex: "Artists",
+            role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
+            role_aston: "Compositeur", role_nightyka: "Compositeur", role_roberts: "Charter", role_shane: "Compositeur",
+            role_audrey: "Compositeur",
+            stat_v1: "( travaille sur la v1 )", stat_left: "( a quitté le mod )"
+        },
+        it: {
+            nav_dl: "Download", nav_ss: "Screenshot", nav_credits: "Crediti", nav_home: "Home",
+            subtitle: "PROSSIMAMENTE",
+            home_p1: "Benvenuti nel sito ufficiale di VS Rayan Realtered.",
+            home_p2: "Questo sito contiene informazioni, download e aggiornamenti sul progetto.",
+            home_p3: "VS Rayan Realtered è una mod fan-made di Friday Night Funkin' / VS Impostor con nuove canzoni, personaggi e modalità storia.",
+            dl_title: "DOWNLOAD", dl_text: "Il rilascio è previsto tra:",
+            ss_title: "SCREENSHOT", ss_text: "Nessuna immagine è ancora trapelata dai server...",
+            cred_title: "Il Team del Progetto", cred_text: "Un grande ringraziamento a tutti coloro che hanno reso possibile questa mod!",
+            mod_out: "LA MOD È USCITA!",
+            time_units: "g o m s",
+            role_alger: "Direttore, compositore, charter, concept artists, doppiatore",
+            role_indie: "Co-direttore, programmatore, artists, compositore, charter",
+            role_simon: "Compositore", role_reesay: "Artists", role_penny: "Artists", role_dardex: "Artists",
+            role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
+            role_aston: "Compositore", role_nightyka: "Compositore", role_roberts: "Charter", role_shane: "Compositore",
+            role_audrey: "Compositore",
+            stat_v1: "( lavora alla v1 )", stat_left: "( ha lasciato la mod )"
+        },
+        es: {
+            nav_dl: "Descargas", nav_ss: "Capturas", nav_credits: "Créditos", nav_home: "Inicio",
+            subtitle: "PRÓXIMAMENTE",
+            home_p1: "Bienvenido al sitio web oficial de VS Rayan Realtered.",
+            home_p2: "Este sitio web contiene información, descargas y actualizaciones sobre el proyecto.",
+            home_p3: "VS Rayan Realtered es un mod fan-made de Friday Night Funkin' / VS Impostor que incluye nuevas canciones, personajes y contenido de la historia.",
+            dl_title: "DESCARGAS", dl_text: "El lanzamiento está programado en:",
+            ss_title: "CAPTURAS", ss_text: "Aún no se han filtrado imágenes de los servidores...",
+            cred_title: "El Equipo del Proyecto", cred_text: "¡Un gran agradecimiento a todos los que hicieron posible este mod!",
+            mod_out: "¡EL MOD HA SALIDO!",
+            time_units: "d h m s",
+            role_alger: "Director, compositor, charter, concept artists, actor de voz",
+            role_indie: "Co-director, programador, artists, compositor, charter",
+            role_simon: "Compositor", role_reesay: "Artists", role_penny: "Artists", role_dardex: "Artists",
+            role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
+            role_aston: "Compositor", role_nightyka: "Compositor", role_roberts: "Charter", role_shane: "Compositor",
+            role_audrey: "Compositor",
+            stat_v1: "( trabaja en la v1 )", stat_left: "( dejó el mod )"
+        },
+        nl: {
+            nav_dl: "Downloads", nav_ss: "Screenshots", nav_credits: "Credits", nav_home: "Home",
+            subtitle: "BINNENKORT",
+            home_p1: "Welkom op de officiële VS Rayan Realtered website.",
+            home_p2: "Deze website bevat informatie, downloads en updates over het project.",
+            home_p3: "VS Rayan Realtered is een fan-made Friday Night Funkin' / VS Impostor mod met nieuwe nummers, personages en verhaalinhoud.",
+            dl_title: "DOWNLOADS", dl_text: "De release is gepland over:",
+            ss_title: "SCREENSHOTS", ss_text: "Er zijn nog geen afbeeldingen gelekt van de servers...",
+            cred_title: "Het Projectteam", cred_text: "Een grote dank aan iedereen die deze mod mogelijk heeft gemaakt!",
+            mod_out: "DE MOD IS UIT!",
+            time_units: "d u m s",
+            role_alger: "Regisseur, componist, charter, concept artists, stemacteur",
+            role_indie: "Co-regisseur, programmeur, artists, componist, charter",
+            role_simon: "Componist", role_reesay: "Artists", role_penny: "Artists", role_dardex: "Artists",
+            role_yellow: "Artists", role_luigi: "Charter", role_lucas: "Artists", role_hevtel: "Charter",
+            role_aston: "Componist", role_nightyka: "Componist", role_roberts: "Charter", role_shane: "Componist",
+            role_audrey: "Componist",
+            stat_v1: "( werkt aan v1 )", stat_left: "( heeft de mod verlaten )"
+        },
+        ko: {
+            nav_dl: "다운로드", nav_ss: "스크린샷", nav_credits: "크레딧", nav_home: "홈",
+            subtitle: "곧 출시됨",
+            home_p1: "VS Rayan Realtered 공식 웹사이트에 오신 것을 환영합니다.",
+            home_p2: "이 웹사이트에는 프로젝트에 대한 정보, 다운로드 및 업데이트가 포함되어 있습니다.",
+            home_p3: "VS Rayan Realtered는 새로운 노래, 캐릭터 및 스토리 콘텐츠를 특징으로 하는 팬메이드 Friday Night Funkin' / VS Impostor 모드입니다.",
+            dl_title: "다운로드", dl_text: "출시 예정일:",
+            ss_title: "스크린샷", ss_text: "아직 서버에서 유출된 이미지가 없습니다...",
+            cred_title: "프로젝트 팀", cred_text: "이 모드를 가능하게 해준 모든 분들께 감사드립니다!",
+            mod_out: "모드가 출시되었습니다!",
+            time_units: "일 시간 분 초",
+            role_alger: "디렉터, 작곡가, 차터, 컨셉 아티스트, 성우",
+            role_indie: "공동 디렉터, 프로그래머, 아티스트, 작곡가, 차터",
+            role_simon: "작곡가", role_reesay: "아티스트", role_penny: "아티스트", role_dardex: "아티스트",
+            role_yellow: "아티스트", role_luigi: "차터", role_lucas: "아티스트", role_hevtel: "차터",
+            role_aston: "작곡가", role_nightyka: "작곡가", role_roberts: "차터", role_shane: "작곡가",
+            role_audrey: "작곡가",
+            stat_v1: "( v1 작업 중 )", stat_left: "( 모드 떠남 )"
+        }
+    };
+
+    let currentLang = "en"; 
+
+    // Fonction pour appliquer la langue
+    function changeLanguage(lang, flagIcon, langName) {
+        currentLang = lang;
+        
+        document.getElementById("current-flag").innerText = flagIcon;
+        document.getElementById("current-lang-name").innerText = langName;
+        document.getElementById("lang-content").classList.remove("show");
+
+        const elements = document.querySelectorAll("[data-i18n]");
+        elements.forEach(el => {
+            const key = el.getAttribute("data-i18n");
+            if(translations[lang] && translations[lang][key]) {
+                el.innerHTML = translations[lang][key];
+            }
+        });
+    }
+
+    // --- GESTION DES PAGES ---
+    function showSection(sectionId) {
+        document.querySelectorAll('.section-content').forEach(function(sec) {
+            sec.classList.remove('active');
+        });
+        document.getElementById(sectionId).classList.add('active');
+        document.querySelector('.box').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // --- COMPTE À REBOURS (9 Juin 2026) ---
+    const countDownDate = new Date("June 9, 2026 00:00:00").getTime();
+
+    const x = setInterval(function() {
+        const now = new Date().getTime();
+        const distance = countDownDate - now;
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        const units = translations[currentLang]["time_units"].split(" ");
+
+        const timerEl = document.getElementById("timer");
+        if(timerEl) {
+            if (distance > 0) {
+                timerEl.innerHTML = days + units[0] + " " + hours + units[1] + " " + minutes + units[2] + " " + seconds + units[3] + " ";
+            } else {
+                clearInterval(x);
+                timerEl.innerHTML = translations[currentLang]["mod_out"];
+            }
+        }
+    }, 1000);
+
+    // --- L'IMAGE QUI VOLE ---
+    function trySpawnImpostor() {
+        if (Math.random() < 0.3) {
+            const img = document.getElementById('impostor-img');
+            if (img && !img.classList.contains('fly')) {
+                img.style.top = Math.floor(Math.random() * 70) + 10 + 'vh'; 
+                img.classList.add('fly');
+
+                setTimeout(() => {
+                    img.classList.remove('fly');
+                }, 15000);
+            }
+        }
+    }
+
+    setInterval(trySpawnImpostor, 8000);
+</script>
+
+</body>
+</html>
